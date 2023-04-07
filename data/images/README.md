@@ -1,0 +1,1 @@
+The downloaded images in polyvore-images.tar.gz go here.
