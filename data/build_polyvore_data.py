@@ -1,18 +1,3 @@
-# Copyright 2017 Xintong Han. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
 """Prepare Polyvore outfit data."""
 
 from __future__ import absolute_import
@@ -28,13 +13,11 @@ import sys
 import threading
 
 import numpy as np
-import tensorflow.compat.v1 as tf
-
-tf.disable_eager_execution()
+import tensorflow as tf
 
 tf.app.flags.DEFINE_string('train_label', 'data/label/train_no_dup.json',
                            'Training label file')
-tf.app.flags.DEFINE_string('test_l  abel', 'data/label/test_no_dup.json',
+tf.app.flags.DEFINE_string('test_label', 'data/label/test_no_dup.json',
                            'Testing label file')
 tf.app.flags.DEFINE_string('valid_label','data/label/valid_no_dup.json',
                            'Validation label file')
@@ -74,7 +57,7 @@ class Vocabulary(object):
     if word in self._vocab:
       return self._vocab[word]
     else:
-      print('unknow: ' + str(word))
+      print('unknow: ' + word)
       return self._unk_id
 
 
@@ -104,7 +87,7 @@ def _float_feature(value):
   
 def _bytes_feature(value):
   """Wrapper for inserting bytes features into Example proto."""
-  return tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(value).encode('utf8')]))
+  return tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(value)]))
 
 
 def _int64_feature_list(values):
@@ -137,7 +120,7 @@ def _to_sequence_example(set_info, decoder, vocab):
   for image_info in set_info['items']:
     filename = os.path.join(FLAGS.image_dir, set_id,
                             str(image_info['index']) + '.jpg')
-    with open(filename, "rb") as f:
+    with open(filename, "r") as f:
       encoded_image = f.read()
     try:
       decoded_image = decoder.decode_jpeg(encoded_image)
@@ -226,7 +209,7 @@ def _process_image_files_batch(coder, thread_index, ranges, name,
   num_files_in_thread = ranges[thread_index][1] - ranges[thread_index][0]
 
   counter = 0
-  for s in range(num_shards_per_batch):
+  for s in xrange(num_shards_per_batch):
     # Generate a sharded version of the file name, e.g. 'train-00002-of-00010'
     shard = thread_index * num_shards_per_batch + s
     output_filename = '%s-%.5d-of-%.5d' % (name, shard, num_shards)
@@ -264,9 +247,9 @@ def _process_image_files(name, all_sets, vocab, num_shards):
   """
 
   # Break all images into batches with a [ranges[i][0], ranges[i][1]].
-  spacing = np.linspace(0, len(all_sets), FLAGS.num_threads + 1).astype(int)
+  spacing = np.linspace(0, len(all_sets), FLAGS.num_threads + 1).astype(np.int)
   ranges = []
-  for i in range(len(spacing) - 1):
+  for i in xrange(len(spacing) - 1):
     ranges.append([spacing[i], spacing[i+1]])
 
   # Launch a thread for each batch.
@@ -280,7 +263,7 @@ def _process_image_files(name, all_sets, vocab, num_shards):
   coder = ImageCoder()
 
   threads = []
-  for thread_index in range(len(ranges)):
+  for thread_index in xrange(len(ranges)):
     args = (coder, thread_index, ranges, name, all_sets, vocab, num_shards)
     t = threading.Thread(target=_process_image_files_batch, args=args)
     t.start()
@@ -312,12 +295,12 @@ def _find_image_files(labels_file, name):
   
   # Read image ids
   all_sets = json.load(open(labels_file))
-
+  
   # Shuffle the ordering of all image files in order to guarantee
   # random ordering of the images with respect to label in the
   # saved TFRecord files. Make the randomization repeatable.
   
-  shuffled_index = list(range(len(all_sets)))
+  shuffled_index = range(len(all_sets))
   random.seed(12345)
   random.shuffle(shuffled_index)
 
