@@ -7,7 +7,7 @@ INCEPTION_CHECKPOINT="models/inception_v3.ckpt"
 MODEL_DIR="models/bi_lstm/"
 
 # Run the training code.
-python src/train_model.py \
+python -B src/train_model.py \
   --input_file_pattern="data/tf_records/train-no-dup-?????-of-00128" \
   --inception_checkpoint_file="${INCEPTION_CHECKPOINT}" \
   --train_dir="${MODEL_DIR}/train" \
@@ -20,7 +20,7 @@ python src/train_model.py \
 # MODEL_DIR="model/siamese/"
 
 # # Run the training code.
-# python polyvore/train_siamese.py \
+# python -B polyvore/train_siamese.py \
 #   --input_file_pattern="data/tf_records/train-no-dup-?????-of-00128" \
 #   --inception_checkpoint_file="${INCEPTION_CHECKPOINT}" \
 #   --train_dir="${MODEL_DIR}/train" \

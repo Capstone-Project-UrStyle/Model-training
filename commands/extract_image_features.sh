@@ -1,7 +1,7 @@
 #!/bin/bash
 CHECKPOINT_DIR="models/model_final/model.ckpt-34865"
 
-python src/run_inference.py \
+python -B src/run_inference.py \
   --checkpoint_path=${CHECKPOINT_DIR} \
   --json_file="data/label/test_no_dup.json" \
   --image_dir="data/images/" \
