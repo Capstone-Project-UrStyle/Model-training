@@ -79,7 +79,6 @@ def run_compatibility_inference(sess, image_seqs, test_feat,
                 feed_dict={"lstm/b_input_feed:0":input_feed,
                            "lstm/b_state_feed:0":zero_state})
     outputs.append(lstm_output)
-    
     for step in range(int(num_images)-1):
       input_feed = np.reshape(emb_seqs[int(num_images)-2-step], [1,-1])
       [lstm_state, lstm_output] = sess.run(

@@ -243,7 +243,7 @@ class PolyvoreModel(object):
         trainable=self.train_inception,
         is_training=self.is_training())
     self.inception_variables = tf.get_collection(
-        tf.GraphKeys.GLOBAL_VARIABLES, scope="InceptionV3")
+        tf.GraphKeys.VARIABLES, scope="InceptionV3")
     
     # Map inception output into embedding space.
     with tf.variable_scope("image_embedding") as scope:
@@ -610,15 +610,15 @@ class PolyvoreModel(object):
       total_loss = tf.contrib.losses.get_total_loss()
       
       # Add summaries.
-      tf.summary.scalar("emb_batch_loss", emb_batch_loss)
-      tf.summary.scalar("f_lstm_loss", f_lstm_loss)
-      tf.summary.scalar("b_lstm_loss", b_lstm_loss)
-      tf.summary.scalar("lstm_loss",
+      tf.scalar_summary("emb_batch_loss", emb_batch_loss)
+      tf.scalar_summary("f_lstm_loss", f_lstm_loss)
+      tf.scalar_summary("b_lstm_loss", b_lstm_loss)
+      tf.scalar_summary("lstm_loss",
             (f_lstm_loss * self.config.f_rnn_loss_factor +
              b_lstm_loss * self.config.b_rnn_loss_factor))
-      tf.summary.scalar("total_loss", total_loss)
+      tf.scalar_summary("total_loss", total_loss)
       for var in tf.trainable_variables():
-        tf.summary.histogram(var.op.name, var)
+        tf.histogram_summary(var.op.name, var)
       
       weights = tf.to_float(tf.reshape(emb_loss_mask, [-1]))
     
@@ -651,7 +651,7 @@ class PolyvoreModel(object):
         initial_value=0,
         name="global_step",
         trainable=False,
-        collections=[tf.GraphKeys.GLOBAL_STEP, tf.GraphKeys.GLOBAL_VARIABLES                                                                                                                                                                                                                                                ])
+        collections=[tf.GraphKeys.GLOBAL_STEP, tf.GraphKeys.VARIABLES])
 
     self.global_step = global_step
 
