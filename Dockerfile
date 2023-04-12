@@ -1,26 +1,32 @@
-FROM nvidia/cuda:8.0-cudnn5-devel
+FROM python:2.7.12
+
+RUN rm /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian/ jessie main" | tee -a /etc/apt/sources.list
+RUN echo "deb-src http://archive.debian.org/debian/ jessie main" | tee -a /etc/apt/sources.list
 
 # Pick up some TF dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
         build-essential \
         curl \
         libfreetype6-dev \
-        libpng12-dev \
         libzmq3-dev \
+        libpng12-dev \
         pkg-config \
-        python \
         python-dev \
-        rsync \
         software-properties-common \
         unzip \
+        rsync \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
-    python get-pip.py && \
-    rm get-pip.py
+# Upgrade pip to 20.3.4
+RUN pip install --upgrade pip==20.3.4
 
+# Install tensorflow 0.12.0
+RUN pip install tensorflow==0.12.0
+
+# Install other python packages
 RUN pip --no-cache-dir install \
         ipykernel \
         jupyter \
@@ -31,21 +37,11 @@ RUN pip --no-cache-dir install \
         && \
     python -m ipykernel.kernelspec
 
-ENV TENSORFLOW_VERSION 0.11.0
-
-# --- DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
-# These lines will be edited automatically by parameterized_docker_build.sh. #
-# COPY _PIP_FILE_ /
-# RUN pip --no-cache-dir install /_PIP_FILE_
-# RUN rm -f /_PIP_FILE_
-
-# Install TensorFlow GPU version.
-RUN pip --no-cache-dir install \
-    http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-${TENSORFLOW_VERSION}-cp27-none-linux_x86_64.whl
-# --- ~ DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
+ENV TENSORFLOW_VERSION 0.12.0
 
 # TensorBoard
 EXPOSE 6006
+
 # IPython
 EXPOSE 8888
 
