@@ -49,3 +49,10 @@ models/
 ehthumbs.db
 Thumbs.db
 .bash_history
+.local
+
+# Test result files #
+#####################
+data/features/test_features.pkl
+data/test_outfit_generation
+fashion_compatibility.pkl
