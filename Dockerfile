@@ -49,6 +49,6 @@ EXPOSE 6006
 # IPython
 EXPOSE 8888
 
-WORKDIR "/root"
+WORKDIR "/AI-server"
 
 CMD ["/bin/bash"]
